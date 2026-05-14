@@ -49,11 +49,19 @@ function validateOrder() {
 
 async function onPreview() {
   errorState.value = null
+  clientErrors.value = []
   orderResult.value = null
   try {
     previewResult.value = await previewOrder(memberId.value.trim())
   } catch (error) {
-    errorState.value = error instanceof ApiError ? error : new ApiError({ message: '請稍後再試' })
+    if (error instanceof ApiError) {
+      errorState.value = new ApiError({
+        ...error,
+        message: '查詢訂單詳情失敗'
+      })
+    } else {
+      errorState.value = new ApiError({ message: '查詢訂單詳情失敗' })
+    }
   }
 }
 
@@ -61,7 +69,15 @@ async function onCreateOrder() {
   errorState.value = null
   orderResult.value = null
   previewResult.value = null
-  if (!validateOrder()) return
+  clientErrors.value = []
+  if (!validateOrder()) {
+    errorState.value = new ApiError({
+      message: '建立訂單失敗',
+      details: [...clientErrors.value]
+    })
+    clientErrors.value = []
+    return
+  }
 
   const items = products.value
     .filter((p) => selectedMap[p.productId])
@@ -71,7 +87,14 @@ async function onCreateOrder() {
     orderResult.value = await createOrder({ memberId: memberId.value.trim(), items })
     await fetchProducts()
   } catch (error) {
-    errorState.value = error instanceof ApiError ? error : new ApiError({ message: '請稍後再試' })
+    if (error instanceof ApiError) {
+      errorState.value = new ApiError({
+        ...error,
+        message: '建立訂單失敗'
+      })
+    } else {
+      errorState.value = new ApiError({ message: '建立訂單失敗' })
+    }
   }
 }
 

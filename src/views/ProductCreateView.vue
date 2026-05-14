@@ -32,8 +32,16 @@ function validate() {
 
 async function submit() {
   apiError.value = null
+  clientErrors.value = []
   createdProduct.value = null
-  if (!validate()) return
+  if (!validate()) {
+    apiError.value = new ApiError({
+      message: '新增商品失敗',
+      details: [...clientErrors.value]
+    })
+    clientErrors.value = []
+    return
+  }
 
   try {
     const result = await createProduct({
@@ -44,7 +52,14 @@ async function submit() {
     })
     createdProduct.value = result
   } catch (error) {
-    apiError.value = error instanceof ApiError ? error : new ApiError({ message: '請稍後再試' })
+    if (error instanceof ApiError) {
+      apiError.value = new ApiError({
+        ...error,
+        message: '新增商品失敗'
+      })
+    } else {
+      apiError.value = new ApiError({ message: '新增商品失敗' })
+    }
   }
 }
 
