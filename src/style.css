@@ -43,6 +43,23 @@ nav a.router-link-active {
   margin-bottom: 0.75rem;
 }
 
+.member-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.member-input-wrap {
+  width: 260px;
+}
+
+.member-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
 label {
   display: block;
   margin-bottom: 0.25rem;

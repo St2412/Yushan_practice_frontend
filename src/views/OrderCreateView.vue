@@ -49,6 +49,7 @@ function validateOrder() {
 
 async function onPreview() {
   errorState.value = null
+  orderResult.value = null
   try {
     previewResult.value = await previewOrder(memberId.value.trim())
   } catch (error) {
@@ -59,6 +60,7 @@ async function onPreview() {
 async function onCreateOrder() {
   errorState.value = null
   orderResult.value = null
+  previewResult.value = null
   if (!validateOrder()) return
 
   const items = products.value
@@ -85,7 +87,16 @@ onMounted(async () => {
 <template>
   <section class="card">
     <h2>建立訂單</h2>
-    <div class="form-row"><label>memberId</label><input v-model="memberId" maxlength="50" /></div>
+    <div class="form-row member-row">
+      <div class="member-input-wrap">
+        <label>memberId</label>
+        <input v-model="memberId" maxlength="50" />
+      </div>
+      <div class="member-actions">
+        <button type="button" @click="onPreview">查詢訂單詳情</button>
+        <button type="button" @click="onCreateOrder">建立訂單</button>
+      </div>
+    </div>
 
     <table>
       <thead>
@@ -104,9 +115,6 @@ onMounted(async () => {
     </table>
 
     <p>前端即時總計（顯示用）: {{ localTotal }}</p>
-    <button type="button" @click="onPreview">查詢後端預覽</button>
-    <button type="button" @click="onCreateOrder">建立訂單</button>
-
     <ul v-if="clientErrors.length" class="error">
       <li v-for="(error, idx) in clientErrors" :key="idx">{{ error }}</li>
     </ul>
