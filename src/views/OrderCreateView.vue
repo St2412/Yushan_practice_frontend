@@ -14,6 +14,13 @@ const previewResult = ref(null)
 const errorState = ref(null)
 const clientErrors = ref([])
 
+function normalizeOrderItems(payload) {
+  if (!payload) return []
+  if (Array.isArray(payload.items)) return payload.items
+  if (Array.isArray(payload.orderItems)) return payload.orderItems
+  return []
+}
+
 async function fetchProducts() {
   products.value = await getAvailableProducts()
   for (const p of products.value) {
@@ -115,6 +122,29 @@ onMounted(async () => {
       <h3>後端預覽結果</h3>
       <p>memberId: {{ previewResult.memberId }}</p>
       <p>totalPrice: {{ previewResult.totalPrice }}</p>
+      <template v-if="normalizeOrderItems(previewResult).length">
+        <h4>會員旗下訂單明細</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>商品編號</th>
+              <th>商品名稱</th>
+              <th>數量</th>
+              <th>單價</th>
+              <th>小計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in normalizeOrderItems(previewResult)" :key="item.productId">
+              <td>{{ item.productId }}</td>
+              <td>{{ item.productName }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.standPrice }}</td>
+              <td>{{ item.itemPrice }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </template>
     </div>
 
     <div v-if="orderResult" class="success">
@@ -123,11 +153,27 @@ onMounted(async () => {
       <p>memberId: {{ orderResult.memberId }}</p>
       <p>payStatus: {{ orderResult.payStatus }}</p>
       <p>totalPrice: {{ orderResult.totalPrice }}</p>
-      <ul>
-        <li v-for="item in orderResult.items" :key="item.productId">
-          {{ item.productId }} / {{ item.productName }} / {{ item.quantity }} / {{ item.standPrice }} / {{ item.itemPrice }}
-        </li>
-      </ul>
+      <h4>訂單明細</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>商品編號</th>
+            <th>商品名稱</th>
+            <th>數量</th>
+            <th>單價</th>
+            <th>小計</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in normalizeOrderItems(orderResult)" :key="item.productId">
+            <td>{{ item.productId }}</td>
+            <td>{{ item.productName }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.standPrice }}</td>
+            <td>{{ item.itemPrice }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </template>
