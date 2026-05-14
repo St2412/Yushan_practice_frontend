@@ -127,7 +127,7 @@ onMounted(async () => {
     </div>
 
     <div v-if="previewResult">
-      <h3>後端預覽結果</h3>
+      <h3>訂單預覽</h3>
       <p>memberId: {{ previewResult.memberId }}</p>
       <p>totalPrice: {{ previewResult.totalPrice }}</p>
       <template v-if="normalizeOrderItems(previewResult).length">
